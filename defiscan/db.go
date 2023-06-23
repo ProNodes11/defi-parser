@@ -32,7 +32,7 @@ func dbClient() (*DbClient, error) {
 }
 
 func (db *DbClient) GetValue(key string) (string, error) {
-	value, err := db.client.Get(key).Result()
+	value, err := db.client.Get(ctx, key).Result()
 	if err == redis.Nil {
 		log.Error('Data not found in db')
 		return "", nil

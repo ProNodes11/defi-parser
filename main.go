@@ -1,75 +1,33 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
-	"net/http"
 	"context"
 	"encoding/json"
-	"fmt"
-	"io/ioutil"
-	"log"
-	"github.com/sirupsen/logrus"
-
+	dfscan "github.com/ProNodes11/defi-parser/defiscan"
+	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
+	"github.com/sirupsen/logrus"
+	"net/http"
 )
 
-
-func upload() {
-	ctx := context.Background()
-	// Создание клиента Redis
-	client := redis.NewClient(&redis.Options{
-		Addr:     "redis:6379", // Адрес и порт Redis сервера
-		Password: "password",               // Пароль (если требуется)
-		DB:       0,                // Индекс базы данных
-	})
-
-	// Чтение JSON данных из файла
-	data, err := ioutil.ReadFile("data.json")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Декодирование JSON данных в структуру
-	var jsonData interface{}
-	err = json.Unmarshal(data, &jsonData)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Преобразование данных в формат Redis
-	redisData, err := json.Marshal(jsonData)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Сохранение данных в Redis
-	err = client.Set(ctx, "mydata", redisData, 0).Err()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println("JSON данные успешно сохранены в Redis.")
-}
+var log = logrus.New()
 
 func main() {
 
+	log.SetFormatter(&logrus.TextFormatter{
+		FullTimestamp: true,
+	})
 
-	log := logrus.New()
-    log.SetFormatter(&logrus.TextFormatter{
-			FullTimestamp: true,
-		})
-
-    log.Info("Log message")
-		log.Warn("Log message")
-		log.Error("Log message")
-    log.WithField("value", 42).Info("Log message with value")
-		// log.WithFields("event", "event", "topic", "topic", "key", "key").Fatal("Failed to send event")
+	log.Info("Log message")
+	log.Warn("Log message")
+	log.Error("Log message")
+	log.WithField("value", 42).Info("Log message with value")
+	dfscan.db.GetValue('mydata')
+	// log.WithFields("event", "event", "topic", "topic", "key", "key").Fatal("Failed to send event")
 	// upload()
 	// api()
 
 }
-
-
 
 func api() {
 	// Создание экземпляра маршрутизатора Gin
@@ -124,8 +82,8 @@ func download() interface{} {
 	// Создание клиента Redis
 	client := redis.NewClient(&redis.Options{
 		Addr:     "redis:6379", // Адрес и порт Redis сервера
-		Password: "password",               // Пароль (если требуется)
-		DB:       0,                // Индекс базы данных
+		Password: "password",   // Пароль (если требуется)
+		DB:       0,            // Индекс базы данных
 	})
 
 	// Получение данных из Redis
